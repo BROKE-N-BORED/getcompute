@@ -12,16 +12,6 @@ One file. Python standard library only — no pip install, no PyTorch, no nvidia
 
 The existing getgpu tools (rshin/getgpu, DongShan03/GetGPU) are NVIDIA/CUDA only. On an integrated-graphics machine (Ryzen 3 3250U, 8 GB RAM, Vega 3 sharing system memory, spinning HDD), there is no VRAM to grab — RAM and CPU threads are the scarce resource. getcompute claims what's actually scarce.
 
-## The story
-
-Everyone building tools for local AI assumes a GPU. My machine doesn't have one it can use — the graphics share the same 8 GB as everything else. So when I went looking for the getgpu idea — claim free compute before you run, hold it so nothing steals it mid-job — both versions on GitHub were dead ends: all CUDA, all VRAM, nothing for a machine like mine.
-
-So we rebuilt the idea around the resource that's actually scarce here: system RAM. getcompute checks free memory against the model file plus its KV cache plus a safety margin for the OS, checks the CPU isn't already buried, and makes sure only one model holds the Ollama slot at a time — because on 8 GB, two runs at once is how you end up swapping to a hard drive and staring at a frozen screen.
-
-It now lives inside Code Forge as the Resource Governor: before the agent sends work to a model, the machine gets asked a simple question — can you actually carry this? If not, it waits instead of dying.
-
-Free, open, one file. Built for the rest of us — the ones running AI on the PC we already own.
-
 ## What it checks
 
 - **Free RAM** (from `/proc/meminfo`) — enough for the model file + KV cache + ~1.5 GB left for the OS itself.
